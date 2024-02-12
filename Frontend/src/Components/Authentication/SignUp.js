@@ -9,7 +9,7 @@ const SignUp = () => {
     const [email, setemail] = useState()
     const [password, setpassword] = useState()
     const [confirm, setconfirm] = useState()
-    const [pic, setpic] = useState()
+    const [profilePic, setprofilePic] = useState()
     const [show, setshow] = useState(false)
     const [showconfirm, setshowconfirm] = useState(false)
     const [loading, setloading] = useState(false)
@@ -40,13 +40,10 @@ const SignUp = () => {
             data.append("file", pics)
             data.append("upload_preset", "chatApp")
             data.append("cloud_name", "chat-appv")
-            fetch("https://api.cloudinary.com/v1_1/chat-appv/image/upload", {
-                method: "post",
-                body: data,
-            })
-                .then((res) => res.json())
-                .then(data => {
-                    setpic(data.url.toString());
+                axios.post("https://api.cloudinary.com/v1_1/chat-appv/image/upload", data)
+                .then((res) => {
+                    setprofilePic(res.data.url.toString());
+                    console.log(res.data.url.toString())
                     setloading(false);
                 })
                 .catch((err) => {
@@ -81,14 +78,14 @@ const SignUp = () => {
         }
         if (password !== confirm) {
             toast({
-              title: "Passwords do not match!",
-              status: "warning",
-              duration: 5000,
-              isClosable: true,
-              position: "bottom-right",
+                title: "Passwords do not match!",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom-right",
             });
             return;
-          }
+        }
         try {
             const config = {
                 headers: {
@@ -96,7 +93,7 @@ const SignUp = () => {
                 },
             };
             const { data } = await axios.post("/api/user",
-                { name, email, password, pic },
+                { name, email, password, profilePic },
                 config
             )
             toast({
